@@ -5,6 +5,7 @@ __author__ = 'Michael Liao (askxuefeng@gmail.com)'
 
 import os
 import cgi
+import time
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -20,7 +21,13 @@ import store
 
 class HomeHandler(webapp.RequestHandler):
     def get(self):
-        self.response.out.write('Hello, world!')
+        city = store.get_cities()
+        if city is None:
+            self.response.set_status(500)
+            return
+        root = os.path.dirname(__file__)
+        t = Template(file=os.path.join(root, 'home.html'), searchList=[{'city' : city}])
+        self.response.out.write(t)
 
 class AdminHandler(webapp.RequestHandler):
 
@@ -33,11 +40,11 @@ class AdminHandler(webapp.RequestHandler):
         if action=='delete_city':
             key = self.request.get('key')
             store.delete_city(key)
-            self.redirect('/admin')
+            self.redirect_admin()
             return
         if action=='':
             cities = store.get_cities()
-            root = os.path.split(os.path.dirname(__file__))[0]
+            root = os.path.dirname(__file__)
             t = Template(file=os.path.join(root, 'admin.html'), searchList=[{'cities' : cities}])
             self.response.out.write(t)
             return
@@ -50,17 +57,21 @@ class AdminHandler(webapp.RequestHandler):
             return
         action = self.request.get('action')
         if action=='create_city':
-            name = cgi.escape(self.request.get('name')).strip()
-            aliases = [cgi.escape(x) for x in self.request.get_all('aliases') if x.strip()]
+            name = cgi.escape(self.request.get('name')).strip().lower()
+            aliases = [cgi.escape(x).lower() for x in self.request.get_all('aliases') if x.strip()]
             code = int(self.request.get('code'))
             store.create_city(name, aliases, code)
-            self.redirect('/admin')
+            self.redirect_admin()
+            return
         self.response.set_status(400)
 
     def get_login_url(self):
         if not users.is_current_user_admin():
             return users.create_login_url('/admin')
         return None
+
+    def redirect_admin(self):
+        self.redirect('/admin?t=%s' % time.time())
 
 class ApiHandler(webapp.RequestHandler):
 
@@ -85,7 +96,7 @@ class ApiHandler(webapp.RequestHandler):
     def write_json(self, json):
         if isinstance(json, unicode):
             json = json.encode('utf-8')
-        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Content-Type'] = 'application/json; charset=utf-8'
         self.response.out.write(json)
 
     def fetch_weather_in_cache(self, code):
@@ -95,7 +106,7 @@ class ApiHandler(webapp.RequestHandler):
         data = self.fetch_weather(code)
         if data is None:
             return None
-        memcache.set(str(code), data, CACHE_TIME)
+        memcache.set(str(code), data, 3600)
         return data
 
     def fetch_weather(self, code):
@@ -117,6 +128,7 @@ class ApiHandler(webapp.RequestHandler):
 application = webapp.WSGIApplication([
         ('^/$', HomeHandler),
         ('^/api$', ApiHandler),
+        ('^/admin$', AdminHandler),
 ], debug=True)
 
 def main():
