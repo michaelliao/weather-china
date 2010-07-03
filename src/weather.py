@@ -121,8 +121,8 @@ class Forecast(object):
         self.code = code
 
     def __str__(self):
-        return u'{"date" : "%s", "day" : %s, "code" : %s, "text" : "%s", "low" : %d, "high" : %d, "image_large" : "%s", "image_small" : "%s"}' % (
-                self.date, self.day, self.code, codes[self.code], self.low, self.high,
+        return '{"date" : "%s", "day" : %s, "code" : %s, "text" : "%s", "low" : %d, "high" : %d, "image_large" : "%s", "image_small" : "%s"}' % (
+                self.date, self.day, self.code, codes[self.code].encode('utf-8'), self.low, self.high,
                 "http://l.yimg.com/a/i/us/nws/weather/gr/%sd.png" % self.code,
                 "http://l.yimg.com/a/i/us/nws/weather/gr/%ss.png" % self.code,
         )
@@ -224,8 +224,7 @@ class Weather(object):
         pub = 'null'
         if self.pub:
             pub = r'"%s"' % self.pub
-        json = u'{"pub" : %s, "wind" : %s, "astronomy" : %s, "atmosphere" : %s, "forecasts" : %s}' \
+        return '{"pub" : %s, "wind" : %s, "astronomy" : %s, "atmosphere" : %s, "forecasts" : %s}' \
                 % (pub, self.wind, self.astronomy, self.atmosphere, self.forecasts)
-        return json.encode('utf-8')
 
     __repr__ = __str__

@@ -13,6 +13,14 @@ class City(db.Model):
     def aliases_str(self):
         return ', '.join(self.aliases)
 
+def get_city(key=None):
+    city = None
+    if key:
+        city = City.get(key)
+    if city is None:
+        city = find_city('beijing')
+    return city
+
 def get_cities():
     return City.all().order('name').fetch(1000)
 
@@ -31,7 +39,7 @@ def create_city(name, aliases, code):
     return c
 
 def delete_city(key):
-    City().get(key).delete()
+    City.get(key).delete()
 
 import urllib
 import datetime
