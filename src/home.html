@@ -1,0 +1,93 @@
+#encoding UTF-8
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>中国地区天气服务</title>
+<link rel="stylesheet" href="/static/css/screen.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="/static/css/print.css" type="text/css" media="print">
+<!--[if lt IE 8]>
+	<link rel="stylesheet" href="/static/css/ie.css" type="text/css" media="screen, projection">
+<![endif]-->
+<style type="text/css">
+div.w-report span.h {
+	margin:3px 0px;
+	font-weight:bold;
+    font-size:24px;
+	display:inline;
+}
+div.w-report span.date {
+	margin:3px 0px 3px 12px;
+	font-weight:bold;
+	font-size:16px;
+}
+div.weather-report {
+	background-image:url(static/img/w-bg.png);
+	background-repeat:no-repeat;
+	background-position:56px 70px;
+	margin:0px;
+	padding:0px;
+	width:300px;
+	height:160px;
+}
+div.weather-icon {
+	background-image:url(static/w/img/d30.png);
+	background-repeat:no-repeat;
+	margin:0px;
+	padding:0px;
+	width:300px;
+	height:160px;
+}
+div.weather-text {
+	text-align:right;
+	margin:0px;
+	padding-top:76px;
+	padding-right:20px;
+}
+div.weather-text p {
+	margin:0px;
+	color:#FFF;
+	font-size: 20px;
+	font-weight: bold;
+	text-shadow: #315895 0px -1px 1px;
+	line-height:28px;
+}
+</style>
+</head>
+
+<body style="background-color:#E5ECF1; font-size:13px">
+  <div class="container" style="background-color:#FFF">
+      <div class="span-24 last">
+      </div>
+      <div class="span-24 last">
+        <div style="background-repeat:no-repeat; height:34; padding:10px 0px 10px 60px; background-image:url(static/w/img/s38.png)">北京 [更改城市]</div>
+      </div>
+    <div id="weather-today" class="w-report span-8">
+    <div><span class="h">今日天气</span><span class="date">7月3日 星期日</span></div>
+        <div class="weather-report">
+          <div class="weather-icon">
+            <div class="weather-text">
+              <p>多云转晴</p>
+              <p>16 ~ 32°</p>
+            </div>
+          </div>
+        </div>
+      </div>
+<div id="weather-tomorrow" class="w-report span-8">
+        <div><span class="h">明日天气</span><span class="date">7月4日 星期一</span></div>
+        <div class="weather-report">
+          <div class="weather-icon">
+            <div class="weather-text">
+              <p>小雨转多云</p>
+              <p>16 ~ 32°</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="span-6 last">赞助商广告</div>
+      
+      <div class="span-24 last"></div>
+      <div class="span-24 last">API服务 | 联系我们 | Copyright&copy;2010</div>
+  </div>
+</body>
+</html>
