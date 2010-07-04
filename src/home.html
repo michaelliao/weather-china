@@ -28,8 +28,17 @@ jQuery(document).ready(function() {
 	jQuery("#x-tomorrow-icon").css("background-image", "url(" + tomorrow.image_large + ")");
 	jQuery("#x-today-icon-small").css("background-image", "url(" + today.image_small + ")");
   });
-  jQuery.x;
 });
+
+function change_city(key){
+  if (key=="-")
+    return;
+  var d = new Date();
+  d.setTime(d.getTime() + (10*365*24*60*60*1000));
+  var expires = "; expires=" + d.toGMTString();
+  document.cookie = "city=" + key + expires + "; path=/";
+  location.reload();
+}
 </script>
 <link rel="stylesheet" href="/static/css/screen.css" type="text/css" media="screen, projection">
 <link rel="stylesheet" href="/static/css/print.css" type="text/css" media="print">
@@ -87,7 +96,14 @@ div.weather-text p {
     <div class="span-24 last">
     </div>
     <div class="span-24 last">
-      <div id="x-today-icon-small" style="background-repeat:no-repeat; height:34; padding:10px 0px 10px 60px; background-image:url(static/w/img/s44.png)"><strong>${city.name}</strong> [<a href="#">更改城市</a>]</div>
+      <div id="x-today-icon-small" style="background-repeat:no-repeat; height:34; padding:10px 0px 10px 60px; background-image:url(static/w/img/s44.png)"><strong>${city.name}</strong>
+        <select name="change_city" id="change_city" onchange="change_city(this.value)">
+          <option value="-">更改城市</option>
+#for $c in $cities
+          <option value="${c.key}">${c.name}</option>
+#end for
+        </select>
+      </div>
     </div>
     <div id="weather-today" class="w-report span-8">
       <div><span class="h">今日天气</span><span class="date"><span id="x-today-date"></span> <span id="x-today-day"></span></span></div>

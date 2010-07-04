@@ -22,6 +22,16 @@ import store
 class HomeHandler(webapp.RequestHandler):
     def get(self):
         key = None
+        # try get city from cookie:
+        if 'Cookie' in self.request.headers:
+            all = self.request.headers['Cookie']
+            if all:
+                cookies = all.split(';')
+                for cookie in cookies:
+                    c = cookie.strip()
+                    if c.startswith('city='):
+                        key = c[5:]
+                        break
         cities = store.get_cities()
         city = store.get_city(key)
         if city is None:

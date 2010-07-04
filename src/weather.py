@@ -123,8 +123,8 @@ class Forecast(object):
     def __str__(self):
         return '{"date" : "%s", "day" : %s, "code" : %s, "text" : "%s", "low" : %d, "high" : %d, "image_large" : "%s", "image_small" : "%s"}' % (
                 self.date, self.day, self.code, codes[self.code].encode('utf-8'), self.low, self.high,
-                "http://l.yimg.com/a/i/us/nws/weather/gr/%sd.png" % self.code,
-                "http://l.yimg.com/a/i/us/nws/weather/gr/%ss.png" % self.code,
+                "http://weather-china.appspot.com/static/w/img/d%s.png" % self.code,
+                "http://weather-china.appspot.com/static/w/img/s%s.png" % self.code,
         )
 
     __repr__ = __str__
