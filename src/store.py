@@ -25,7 +25,7 @@ def get_city(key=None):
     return city
 
 def get_cities():
-    return City.all().order('name').fetch(1000)
+    return City.all().order('aliases').fetch(1000)
 
 def find_city(name):
     '''
