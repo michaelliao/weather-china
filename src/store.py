@@ -10,6 +10,9 @@ class City(db.Model):
     aliases = db.StringListProperty(required=True)
     code = db.IntegerProperty(required=True)
 
+    def first_alias(self):
+        return self.aliases[0]
+
     def aliases_str(self):
         return ', '.join(self.aliases)
 
