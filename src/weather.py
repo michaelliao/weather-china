@@ -6,26 +6,6 @@ __author__ = 'Michael Liao (askxuefeng@gmail.com)'
 import datetime
 from xml.parsers.expat import ParserCreate
 
-locations = {
-        'beijing'      : 2151330,
-
-        'chengdu'      : 2158433,
-
-        'hong kong'    : 2165352,
-
-        'jinan'        : 2168327,
-
-        'mianyang'     : 2158439,
-
-        'sanya'        : 2162784,
-        'shanghai'     : 2151849,
-        'shijiazhuang' : 2171287,
-
-        'tianjin'      : 2159908,
-
-        'wuhan'        : 2163866,
-}
-
 codes = {
         0 : u'龙卷风', # tornado
         1 : u'热带风暴', # tropical storm
@@ -85,7 +65,11 @@ class Wind(object):
         self.speed = speed
 
     def __str__(self):
-        return r'{"chill" : %s, "direction" : %s, "speed" : %s}' % (self.chill, self.direction, self.speed)
+        return r'{"chill" : %s, "direction" : %s, "speed" : %s}' % (\
+                self.chill or "null",
+                self.direction or "null",
+                self.speed or "null"
+        )
 
     __repr__ = __str__
 
@@ -97,7 +81,12 @@ class Atmosphere(object):
         self.rising = rising
 
     def __str__(self):
-        return r'{"humidity" : %s, "visibility" : %s, "pressure" : %s, "rising": %s}' % (self.humidity, self.visibility, self.pressure, self.rising)
+        return r'{"humidity" : %s, "visibility" : %s, "pressure" : %s, "rising": %s}' % (\
+                self.humidity or "null",
+                self.visibility or "null",
+                self.pressure or "null",
+                self.rising or "null"
+        )
 
     __repr__ = __str__
 
@@ -228,3 +217,9 @@ class Weather(object):
                 % (pub, self.wind, self.astronomy, self.atmosphere, self.forecasts)
 
     __repr__ = __str__
+
+if __name__=='__main__':
+    import urllib
+    url = 'http://weather.yahooapis.com/forecastrss?u=c&w=2143712'
+    result = urllib.urlopen(url).read()
+    print Weather(result)
