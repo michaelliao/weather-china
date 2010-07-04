@@ -4,6 +4,33 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>中国地区天气服务</title>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript">
+var days=["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
+jQuery(document).ready(function() {
+  jQuery.getJSON("/api?city=${city.first_alias}", function(data) {
+    var today = data.forecasts[0];
+	var tomorrow = data.forecasts[1];
+
+    jQuery("#x-today-date").html(today.date);
+    jQuery("#x-tomorrow-date").html(tomorrow.date);
+
+    jQuery("#x-today-day").html(days[today.day]);
+    jQuery("#x-tomorrow-day").html(days[tomorrow.day]);
+
+    jQuery("#x-today-text").html(today.text);
+    jQuery("#x-tomorrow-text").html(tomorrow.text);
+
+    jQuery("#x-today-temp").html(today.low + " ~ " + today.high + "°");
+	jQuery("#x-tomorrow-temp").html(tomorrow.low + " ~ " + tomorrow.high + "°");
+
+    jQuery("#x-today-icon").css("background-image", "url(" + today.image_large + ")");
+	jQuery("#x-tomorrow-icon").css("background-image", "url(" + tomorrow.image_large + ")");
+	jQuery("#x-today-icon-small").css("background-image", "url(" + today.image_small + ")");
+  });
+  jQuery.x;
+});
+</script>
 <link rel="stylesheet" href="/static/css/screen.css" type="text/css" media="screen, projection">
 <link rel="stylesheet" href="/static/css/print.css" type="text/css" media="print">
 <!--[if lt IE 8]>
@@ -31,7 +58,7 @@ div.weather-report {
 	height:160px;
 }
 div.weather-icon {
-	background-image:url(static/w/img/d30.png);
+	background-image:url(static/w/img/d44.png);
 	background-repeat:no-repeat;
 	margin:0px;
 	padding:0px;
@@ -57,37 +84,43 @@ div.weather-text p {
 
 <body style="background-color:#E5ECF1; font-size:13px">
   <div class="container" style="background-color:#FFF">
-      <div class="span-24 last">
-      </div>
-      <div class="span-24 last">
-        <div style="background-repeat:no-repeat; height:34; padding:10px 0px 10px 60px; background-image:url(static/w/img/s38.png)">北京 [更改城市]</div>
-      </div>
+    <div class="span-24 last">
+    </div>
+    <div class="span-24 last">
+      <div id="x-today-icon-small" style="background-repeat:no-repeat; height:34; padding:10px 0px 10px 60px; background-image:url(static/w/img/s44.png)"><strong>${city.name}</strong> [<a href="#">更改城市</a>]</div>
+    </div>
     <div id="weather-today" class="w-report span-8">
-    <div><span class="h">今日天气</span><span class="date">7月3日 星期日</span></div>
-        <div class="weather-report">
-          <div class="weather-icon">
-            <div class="weather-text">
-              <p>多云转晴</p>
-              <p>16 ~ 32°</p>
-            </div>
+      <div><span class="h">今日天气</span><span class="date"><span id="x-today-date"></span> <span id="x-today-day"></span></span></div>
+      <div class="weather-report">
+        <div id="x-today-icon" class="weather-icon">
+          <div class="weather-text">
+            <p id="x-today-text">Loading...</p>
+            <p id="x-today-temp"></p>
           </div>
         </div>
       </div>
-<div id="weather-tomorrow" class="w-report span-8">
-        <div><span class="h">明日天气</span><span class="date">7月4日 星期一</span></div>
-        <div class="weather-report">
-          <div class="weather-icon">
-            <div class="weather-text">
-              <p>小雨转多云</p>
-              <p>16 ~ 32°</p>
-            </div>
+      <div>其他天气信息：</div>
+      <div>风力：风向：风速：</div>
+      <div>能见度：湿度：气压：</div>
+      <div>日出：日落：</div>
+      <div>风力：</div>
+      <div>风力：</div>
+      <div>发布于：</div>
+    </div>
+    <div id="weather-tomorrow" class="w-report span-8">
+      <div><span class="h">明日天气</span><span class="date"><span id="x-tomorrow-date"></span> <span id="x-tomorrow-day"></span></span></div>
+      <div class="weather-report">
+        <div id="x-tomorrow-icon" class="weather-icon">
+          <div class="weather-text">
+            <p id="x-tomorrow-text">Loading...</p>
+            <p id="x-tomorrow-temp"></p>
           </div>
         </div>
       </div>
+    </div>
     <div class="span-6 last">赞助商广告</div>
-      
       <div class="span-24 last"></div>
-      <div class="span-24 last">API服务 | 联系我们 | Copyright&copy;2010</div>
+      <div class="span-24 last">API服务 | 意见反馈 | 联系我们 | Copyright&copy;2010</div>
   </div>
 </body>
 </html>
