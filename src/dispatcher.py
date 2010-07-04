@@ -21,12 +21,14 @@ import store
 
 class HomeHandler(webapp.RequestHandler):
     def get(self):
-        city = store.get_cities()
+        key = None
+        cities = store.get_cities()
+        city = store.get_city(key)
         if city is None:
             self.response.set_status(500)
             return
         root = os.path.dirname(__file__)
-        t = Template(file=os.path.join(root, 'home.html'), searchList=[{'city' : city}])
+        t = Template(file=os.path.join(root, 'home.html'), searchList=[{'city' : city, 'cities' : cities}])
         self.response.out.write(t)
 
 class AdminHandler(webapp.RequestHandler):
