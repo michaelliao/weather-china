@@ -27,6 +27,26 @@ jQuery(document).ready(function() {
     jQuery("#x-today-icon").css("background-image", "url(" + today.image_large + ")");
 	jQuery("#x-tomorrow-icon").css("background-image", "url(" + tomorrow.image_large + ")");
 	jQuery("#x-today-icon-small").css("background-image", "url(" + today.image_small + ")");
+
+    jQuery("#x-pub").html(data.pub);
+	if (data.wind.chill!=null)
+	  jQuery("#x-wind-chill").html(data.wind.chill);
+	if (data.wind.direction!=null)
+	  jQuery("#x-wind-direction").html(data.wind.direction);
+	if (data.wind.speed!=null)
+	  jQuery("#x-wind-speed").html(data.wind.speed);
+
+    if (data.atmosphere.humidity!=null)
+	  jQuery("#x-atmosphere-humidity").html(data.atmosphere.humidity);
+    if (data.atmosphere.visibility!=null)
+	  jQuery("#x-atmosphere-visibility").html(data.atmosphere.visibility);
+    if (data.atmosphere.pressure!=null)
+	  jQuery("#x-atmosphere-pressure").html(data.atmosphere.pressure);
+
+    if (data.astronomy.sunrise!=null)
+	  jQuery("#x-astronomy-sunrise").html(data.astronomy.sunrise);
+    if (data.astronomy.sunset!=null)
+	  jQuery("#x-astronomy-sunset").html(data.astronomy.sunset);
   });
 });
 
@@ -89,9 +109,19 @@ div.weather-text p {
 	line-height:28px;
 }
 </style>
-</head>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-251595-22']);
+  _gaq.push(['_trackPageview']);
 
-<body style="background-color:#E5ECF1; font-size:13px">
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body style="font-size:13px">
   <div class="container" style="background-color:#FFF">
     <div class="span-24 last">
     </div>
@@ -115,13 +145,13 @@ div.weather-text p {
           </div>
         </div>
       </div>
-      <div>其他天气信息：</div>
-      <div>风力：风向：风速：</div>
-      <div>能见度：湿度：气压：</div>
-      <div>日出：日落：</div>
-      <div>风力：</div>
-      <div>风力：</div>
-      <div>发布于：</div>
+      <div><span class="h">其他信息：</span></div>
+      <div style="padding:6px">
+        <div>风力：<span id="x-wind-chill">N/A</span> 风向：<span id="x-wind-direction">N/A</span> 风速：<span id="x-wind-speed">N/A</span></div>
+        <div>能见度：<span id="x-atmosphere-visibility">N/A</span> 湿度：<span id="x-atmosphere-humidity">N/A</span> 气压：<span id="x-atmosphere-pressure">N/A</span></div>
+        <div>日出：<span id="x-astronomy-sunrise">N/A</span> 日落：<span id="x-astronomy-sunset">N/A</span></div>
+        <div>发布于：<span id="x-pub">N/A</span></div>
+      </div>
     </div>
     <div id="weather-tomorrow" class="w-report span-8">
       <div><span class="h">明日天气</span><span class="date"><span id="x-tomorrow-date"></span> <span id="x-tomorrow-day"></span></span></div>
@@ -136,7 +166,10 @@ div.weather-text p {
     </div>
     <div class="span-6 last">赞助商广告</div>
       <div class="span-24 last"></div>
-      <div class="span-24 last">API服务 | 意见反馈 | 联系我们 | Copyright&copy;2010</div>
+      <div class="span-24 last"><div style="text-align:center;padding:6px"><a href="http://code.google.com/p/weather-china/wiki/API" target="_blank">API服务</a> | <a href="http://code.google.com/p/weather-china/issues/list" target="_blank">意见反馈</a> | <a id="x-contact" href="#">联系我们</a> | Copyright&copy;2010</div></div>
   </div>
+<script type="text/javascript">
+    jQuery("#x-contact").attr("href", "mail" + "to:ask" + "xuefeng@" + "gm" + "ail.com");
+</script>
 </body>
 </html>
