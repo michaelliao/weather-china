@@ -90,7 +90,7 @@ class ApiHandler(webapp.RequestHandler):
     CACHE_TIME = 600 # 600 seconds
 
     def get(self):
-        callback = cgi.escape(self.request.get('callback', ''))
+        callback = cgi.escape(self.request.get('callback', '').strip())
         c = cgi.escape(self.request.get('city', '')).lower()
         if not c:
             return self.send_error('MISSING_PARAMETER', 'Missing parameter \'city\'')
@@ -101,7 +101,7 @@ class ApiHandler(webapp.RequestHandler):
         if weather is None:
             return self.send_error('SERVICE_UNAVAILABLE', 'Service unavailable')
         if callback:
-            self.write_json(''.join([callback, '(', weather, ');']))
+            self.write_json(u''.join([callback.decode('utf-8'), u'(', weather, u');']))
         else:
             self.write_json(weather)
 
