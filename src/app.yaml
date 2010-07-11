@@ -1,0 +1,32 @@
+application: weather-china
+version: 1
+runtime: python
+api_version: 1
+
+derived_file_type:
+- python_precompiled
+
+handlers:
+
+- url: /static
+  static_dir: static
+  expiration: 30d
+
+- url: /(.+)/static/(.*)
+  static_files: \1/static/\2
+  upload: (.+)/static/(.*)
+  expiration: 30d
+
+- url: /favicon.ico
+  static_files: favicon.ico
+  upload: favicon.ico
+  mime_type: image/x-icon
+  expiration: 30d
+
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+  expiration: 3d
+
+- url: /.*
+  script: dispatcher.py
