@@ -101,7 +101,7 @@ class ApiHandler(webapp.RequestHandler):
         if weather is None:
             return self.send_error('SERVICE_UNAVAILABLE', 'Service unavailable')
         if callback:
-            self.write_json(u''.join([callback.decode('utf-8'), u'(', weather, u');']))
+            self.write_json(''.join([callback, '(', weather, ');']))
         else:
             self.write_json(weather)
 
