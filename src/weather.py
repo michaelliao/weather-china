@@ -133,6 +133,11 @@ def get_date(date):
     month = index_of(('', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), ss[1])
     return datetime.date(int(ss[2]), month, int(ss[0]))
 
+def f2c(temp):
+    f = float(temp)
+    c = (f - 32) * 5 / 9 + 0.5
+    return int(c)
+
 def to_24hour(time):
     ' convert "4:39 pm" to "16:39" '
     if time.endswith(' am'):
@@ -178,8 +183,8 @@ class Weather(object):
             self.forecasts.append(Forecast(
                     get_day(attrs['day']),
                     get_date(attrs['date']),
-                    int(attrs['low']),
-                    int(attrs['high']),
+                    f2c(attrs['low']),
+                    f2c(attrs['high']),
                     int(attrs['code'])
             ))
         if name=='yweather:astronomy':
