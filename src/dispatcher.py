@@ -134,7 +134,7 @@ class ApiHandler(webapp.RequestHandler):
         return str(weather.Weather(data))
 
     def fetch_rss(self, code):
-        url = 'http://weather.yahooapis.com/forecastrss?u=c&w=%s' % code
+        url = 'http://weather.yahooapis.com/forecastrss?w=%s' % code
         try:
             result = urlfetch.fetch(url, follow_redirects=False)
         except (urlfetch.Error, apiproxy_errors.Error):
