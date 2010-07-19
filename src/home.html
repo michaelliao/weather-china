@@ -57,6 +57,10 @@ function change_city(key){
   d.setTime(d.getTime() + (10*365*24*60*60*1000));
   var expires = "; expires=" + d.toGMTString();
   document.cookie = "city=" + key + expires + "; path=/";
+  try {
+    notify_city_change();
+  }
+  catch(e) {}
   location.reload();
 }
 </script>
@@ -130,7 +134,7 @@ div.weather-text p {
         <select name="change_city" id="change_city" onchange="change_city(this.value)">
           <option value="-">更改城市</option>
 #for $c in $cities
-          <option value="${c.key}">${c.name}</option>
+          <option value="${c.first_alias()}">${c.name}</option>
 #end for
         </select>
       </div>

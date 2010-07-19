@@ -19,21 +19,23 @@ from Cheetah.Template import Template
 import weather
 import store
 
+def get_city(request):
+    # try get city from cookie:
+    if 'Cookie' in request.headers:
+        all = request.headers['Cookie']
+        if all:
+            cookies = all.split(';')
+            for cookie in cookies:
+                c = cookie.strip()
+                if c.startswith('city='):
+                    return c[5:]
+    return None
+
 class HomeHandler(webapp.RequestHandler):
     def get(self):
-        key = None
-        # try get city from cookie:
-        if 'Cookie' in self.request.headers:
-            all = self.request.headers['Cookie']
-            if all:
-                cookies = all.split(';')
-                for cookie in cookies:
-                    c = cookie.strip()
-                    if c.startswith('city='):
-                        key = c[5:]
-                        break
+        name = get_city(self.request)
         cities = store.get_cities()
-        city = store.get_city(key)
+        city = store.find_city(name)
         if city is None:
             self.response.set_status(500)
             return
@@ -90,14 +92,23 @@ class ApiHandler(webapp.RequestHandler):
     CACHE_TIME = 600 # 600 seconds
 
     def get(self):
-        callback = cgi.escape(self.request.get('callback', '').strip())
-        c = cgi.escape(self.request.get('city', '')).lower()
+        callback = ''
+        c = ''
+        extension = self.request.get('extension', '')
+        if extension=='chrome':
+            # detect city from cookie:
+            c = get_city(self.request)
+            if c=='':
+                c = 'beijing'
+        else:
+            callback = cgi.escape(self.request.get('callback', '').strip())
+            c = cgi.escape(self.request.get('city', '')).lower()
         if not c:
             return self.send_error('MISSING_PARAMETER', 'Missing parameter \'city\'')
         city = store.find_city(c)
         if city is None:
             return self.send_error('CITY_NOT_FOUND', 'City not found')
-        weather = self.fetch_weather_in_cache(city.code)
+        weather = self.fetch_weather_in_cache(city)
         if weather is None:
             return self.send_error('SERVICE_UNAVAILABLE', 'Service unavailable')
         if callback:
@@ -117,21 +128,21 @@ class ApiHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json; charset=utf-8'
         self.response.out.write(json)
 
-    def fetch_weather_in_cache(self, code):
-        data = memcache.get(str(code))
+    def fetch_weather_in_cache(self, city):
+        data = memcache.get(str(city.code))
         if data:
             return data
-        data = self.fetch_weather(code)
+        data = self.fetch_weather(city)
         if data is None:
             return None
-        memcache.set(str(code), data, 3600)
+        memcache.set(str(city.code), data, 3600)
         return data
 
-    def fetch_weather(self, code):
-        data = self.fetch_rss(code)
+    def fetch_weather(self, city):
+        data = self.fetch_rss(city.code)
         if data is None:
             return None
-        return str(weather.Weather(data))
+        return str(weather.Weather(city.name, data))
 
     def fetch_rss(self, code):
         url = 'http://weather.yahooapis.com/forecastrss?w=%s' % code

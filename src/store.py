@@ -34,6 +34,8 @@ def find_city(name):
     city = City.all().filter('aliases =', name).get()
     if city is None:
         city = City.all().filter('name =', name).get()
+    if city is None:
+        city = City.all().filter('aliases =', 'beijing').get()
     return city
 
 def create_city(name, aliases, code):

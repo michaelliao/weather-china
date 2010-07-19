@@ -200,8 +200,11 @@ class Weather(object):
             self.wind.direction = attrs['direction']
             self.wind.speed = attrs['speed']
 
-    def __init__(self, data):
+    def __init__(self, name, data):
         self.__isLastBuildDate = False
+        if isinstance(name, unicode):
+            name = name.encode('utf-8')
+        self.name = name
         self.pub = None
         self.wind = Wind(None, None, None)
         self.atmosphere = Atmosphere(None, None, None, None)
@@ -218,8 +221,8 @@ class Weather(object):
         pub = 'null'
         if self.pub:
             pub = r'"%s"' % self.pub
-        return '{"pub" : %s, "wind" : %s, "astronomy" : %s, "atmosphere" : %s, "forecasts" : %s}' \
-                % (pub, self.wind, self.astronomy, self.atmosphere, self.forecasts)
+        return '{"pub" : %s, "name" : "%s", "wind" : %s, "astronomy" : %s, "atmosphere" : %s, "forecasts" : %s}' \
+                % (pub, self.name, self.wind, self.astronomy, self.atmosphere, self.forecasts)
 
     __repr__ = __str__
 
