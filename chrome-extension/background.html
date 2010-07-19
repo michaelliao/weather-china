@@ -1,0 +1,207 @@
+<html>
+<head>
+<script>
+//var animationFrames = 36;
+//var animationSpeed = 10; // ms
+var canvas;
+var canvasContext;
+var weatherImage;
+var pollIntervalMin = 1000 * 60 * 15;  // 15 minute
+var pollIntervalMax = 1000 * 60 * 30;  // 30 minute
+//var requestFailureCount = 0;  // used for exponential backoff
+var requestTimeout = 1000 * 10;  // 10 seconds
+//var rotation = 0;
+//var unreadCount = -1;
+//var loadingAnimation = new LoadingAnimation();
+
+function isWeatherChinaUrl(url) {
+  if (url=="http://weather-china.appspot.com/")
+    return true;
+  if (url=="https://weather-china.appspot.com/")
+    return true;
+  return false;
+}
+
+// A "loading" animation displayed while we wait for the first response from
+// weather-china. This animates the badge text with a dot that cycles from left
+// to right.
+//function LoadingAnimation() {
+//  this.timerId_ = 0;
+//  this.maxCount_ = 8;  // Total number of states in animation
+//  this.current_ = 0;  // Current state
+//  this.maxDot_ = 4;  // Max number of dots in animation
+//}
+//
+//LoadingAnimation.prototype.paintFrame = function() {
+//  var text = "";
+//  for (var i = 0; i < this.maxDot_; i++) {
+//    text += (i == this.current_) ? "." : " ";
+//  }
+//  if (this.current_ >= this.maxDot_)
+//    text += "";
+//
+//  chrome.browserAction.setBadgeText({text:text});
+//  this.current_++;
+//  if (this.current_ == this.maxCount_)
+//    this.current_ = 0;
+//}
+//
+//LoadingAnimation.prototype.start = function() {
+//  if (this.timerId_)
+//    return;
+//
+//  var self = this;
+//  this.timerId_ = window.setInterval(function() {
+//    self.paintFrame();
+//  }, 100);
+//}
+//
+//LoadingAnimation.prototype.stop = function() {
+//  if (!this.timerId_)
+//    return;
+//
+//  window.clearInterval(this.timerId_);
+//  this.timerId_ = 0;
+//}
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+  if (changeInfo.url && isWeatherChinaUrl(changeInfo.url)) {
+    startRequest();
+  }
+});
+
+function init() {
+  canvas = document.getElementById('canvas');
+  weatherImage = document.getElementById('loading');
+  canvasContext = canvas.getContext('2d');
+
+  chrome.browserAction.setBadgeBackgroundColor({color:[208, 0, 24, 255]});
+  chrome.browserAction.setIcon({path: "loading.png"});
+//  loadingAnimation.start();
+
+  startRequest();
+}
+
+function scheduleRequest() {
+  var randomness = Math.random() * 2;
+  var exponent = Math.pow(2, requestFailureCount);
+  var delay = Math.min(randomness * pollIntervalMin * exponent, pollIntervalMax);
+  delay = Math.round(delay);
+  window.setTimeout(startRequest, delay);
+}
+
+// ajax stuff
+function startRequest() {
+  updateWeather(null);
+  var xhr = new XMLHttpRequest();
+  var abortTimerId = window.setTimeout(function() {
+    xhr.abort();  // synchronously calls onreadystatechange
+  }, requestTimeout);
+
+  try {
+    xhr.onreadystatechange = function(){
+      if (xhr.readyState != 4)
+        return;
+
+      window.clearTimeout(abortTimerId);
+      if (xhr.responseText) {
+        var data = JSON.parse(xhr.responseText);
+        if (data.pub) {
+          updateWeather(data);
+          return;
+        } else {
+          console.error("Error response: " + xhr.responseText);
+        }
+      }
+      updateWeather(null);
+    }
+
+    xhr.onerror = function(error) {
+      updateWeather(null);
+    }
+
+    xhr.open("GET", "http://weather-china.appspot.com/api?extension=chrome", true);
+    xhr.send(null);
+  } catch(e) {
+    console.error(chrome.i18n.getMessage("weather_china_check_exception", e));
+    updateWeather(null);
+  }
+}
+
+function updateWeather(data) {
+  if (data==null) {
+    chrome.browserAction.setIcon({path: "loading.png"});
+    chrome.browserAction.setBadgeText({text:""});
+  }
+  else {
+    chrome.browserAction.setIcon({path: data.forecasts[0].code + ".png"});
+    //var msg = data.name + "，最低：" + data.forecasts[0].low + "；最高：" + data.forecasts[0].high;
+    chrome.browserAction.setBadgeText({text: data.forecasts[0].high});
+  }
+}
+
+function ease(x) {
+  return (1-Math.sin(Math.PI/2+x*Math.PI))/2;
+}
+
+function animateFlip() {
+  rotation += 1/animationFrames;
+  drawIconAtRotation();
+
+  if (rotation <= 1) {
+    setTimeout("animateFlip()", animationSpeed);
+  } else {
+    rotation = 0;
+    drawIconAtRotation();
+    chrome.browserAction.setBadgeText({
+      text: unreadCount != "0" ? unreadCount : ""
+    });
+    chrome.browserAction.setBadgeBackgroundColor({color:[208, 0, 24, 255]});
+  }
+}
+
+function drawIconAtRotation() {
+  canvasContext.save();
+  canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+  canvasContext.translate(
+      Math.ceil(canvas.width/2),
+      Math.ceil(canvas.height/2));
+  canvasContext.rotate(2*Math.PI*ease(rotation));
+  canvasContext.drawImage(weatherImage,
+      -Math.ceil(canvas.width/2),
+      -Math.ceil(canvas.height/2));
+  canvasContext.restore();
+
+  chrome.browserAction.setIcon({imageData:canvasContext.getImageData(0, 0, canvas.width,canvas.height)});
+}
+
+function goToWeatherChina() {
+  chrome.tabs.getAllInWindow(undefined, function(tabs) {
+    for (var i = 0, tab; tab = tabs[i]; i++) {
+      if (tab.url && isWeatherChinaUrl(tab.url)) {
+        chrome.tabs.update(tab.id, {selected: true});
+        return;
+      }
+    }
+    chrome.tabs.create({url: "http://weather-china.appspot.com/"});
+  });
+}
+
+// Called when the user clicks on the browser action.
+chrome.browserAction.onClicked.addListener(function(tab) {
+  goToWeatherChina();
+});
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (isWeatherChinaUrl(tab.url)) {
+    startRequest();
+  }
+});
+
+</script>
+</head>
+<body onLoad="init()">
+<img id="loading" src="loading.png">
+<canvas id="canvas" width="19" height="19">
+</body>
+</html>
