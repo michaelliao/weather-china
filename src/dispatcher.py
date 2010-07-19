@@ -98,7 +98,7 @@ class ApiHandler(webapp.RequestHandler):
         if extension=='chrome':
             # detect city from cookie:
             c = get_city(self.request)
-            if c=='':
+            if not c:
                 c = 'beijing'
         else:
             callback = cgi.escape(self.request.get('callback', '').strip())
