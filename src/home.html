@@ -57,10 +57,6 @@ function change_city(key){
   d.setTime(d.getTime() + (10*365*24*60*60*1000));
   var expires = "; expires=" + d.toGMTString();
   document.cookie = "city=" + key + expires + "; path=/";
-  try {
-    notify_city_change();
-  }
-  catch(e) {}
   location.reload();
 }
 </script>
@@ -139,32 +135,43 @@ div.weather-text p {
         </select>
       </div>
     </div>
-    <div id="weather-today" class="w-report span-8">
-      <div><span class="h">今日天气</span><span class="date"><span id="x-today-date"></span> <span id="x-today-day"></span></span></div>
-      <div class="weather-report">
-        <div id="x-today-icon" class="weather-icon">
-          <div class="weather-text">
-            <p id="x-today-text">Loading...</p>
-            <p id="x-today-temp"></p>
+	<div class="span-16">
+      <div class="span-16 last">
+        <div id="weather-today" class="w-report span-8">
+          <div><span class="h">今日天气</span><span class="date"><span id="x-today-date"></span> <span id="x-today-day"></span></span></div>
+          <div class="weather-report">
+            <div id="x-today-icon" class="weather-icon">
+              <div class="weather-text">
+                <p id="x-today-text">Loading...</p>
+                <p id="x-today-temp"></p>
+              </div>
+            </div>
+          </div>
+          <div><span class="h">其他信息：</span></div>
+            <div style="padding:6px">
+            <div>风力：<span id="x-wind-chill">N/A</span> 风向：<span id="x-wind-direction">N/A</span> 风速：<span id="x-wind-speed">N/A</span></div>
+            <div>能见度：<span id="x-atmosphere-visibility">N/A</span> 湿度：<span id="x-atmosphere-humidity">N/A</span> 气压：<span id="x-atmosphere-pressure">N/A</span></div>
+            <div>日出：<span id="x-astronomy-sunrise">N/A</span> 日落：<span id="x-astronomy-sunset">N/A</span></div>
+            <div>发布于：<span id="x-pub">N/A</span></div>
+          </div>
+        </div>
+        <div id="weather-tomorrow" class="w-report span-8 last">
+          <div><span class="h">明日天气</span><span class="date"><span id="x-tomorrow-date"></span> <span id="x-tomorrow-day"></span></span></div>
+          <div class="weather-report">
+            <div id="x-tomorrow-icon" class="weather-icon">
+              <div class="weather-text">
+                <p id="x-tomorrow-text">Loading...</p>
+                <p id="x-tomorrow-temp"></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div><span class="h">其他信息：</span></div>
-      <div style="padding:6px">
-        <div>风力：<span id="x-wind-chill">N/A</span> 风向：<span id="x-wind-direction">N/A</span> 风速：<span id="x-wind-speed">N/A</span></div>
-        <div>能见度：<span id="x-atmosphere-visibility">N/A</span> 湿度：<span id="x-atmosphere-humidity">N/A</span> 气压：<span id="x-atmosphere-pressure">N/A</span></div>
-        <div>日出：<span id="x-astronomy-sunrise">N/A</span> 日落：<span id="x-astronomy-sunset">N/A</span></div>
-        <div>发布于：<span id="x-pub">N/A</span></div>
-      </div>
-    </div>
-    <div id="weather-tomorrow" class="w-report span-8">
-      <div><span class="h">明日天气</span><span class="date"><span id="x-tomorrow-date"></span> <span id="x-tomorrow-day"></span></span></div>
-      <div class="weather-report">
-        <div id="x-tomorrow-icon" class="weather-icon">
-          <div class="weather-text">
-            <p id="x-tomorrow-text">Loading...</p>
-            <p id="x-tomorrow-temp"></p>
-          </div>
+      <div class="w-report span-16 last" style="margin-top:6px">
+        <div><span class="h">安装插件</span></div>
+        <div style="padding:6px">
+          <div>如果您使用的是支持HTML 5的Google Chrome浏览器，可以<a href="https://chrome.google.com/extensions/detail/gbmkicglakjoppnghhiceacmbbaihoeh" target="_blank">安装最新插件</a>以便随时获取天气预报：</div>
+          <div><a href="https://chrome.google.com/extensions/detail/gbmkicglakjoppnghhiceacmbbaihoeh" target="_blank"><img src="static/img/snapshot.png" width="291" height="99" style="margin:12px"/></a></div>
         </div>
       </div>
     </div>
