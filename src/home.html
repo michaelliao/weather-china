@@ -1,0 +1,205 @@
+#encoding UTF-8
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>天气预报</title>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript">
+var days=["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
+jQuery(document).ready(function() {
+  jQuery.getJSON("/api?city=${city.first_alias}", function(data) {
+    var today = data.forecasts[0];
+	var tomorrow = data.forecasts[1];
+
+    jQuery("#x-today-date").html(today.date);
+    jQuery("#x-tomorrow-date").html(tomorrow.date);
+
+    jQuery("#x-today-day").html(days[today.day]);
+    jQuery("#x-tomorrow-day").html(days[tomorrow.day]);
+
+    jQuery("#x-today-text").html(today.text);
+    jQuery("#x-tomorrow-text").html(tomorrow.text);
+
+    jQuery("#x-today-temp").html(today.low + " ~ " + today.high + "°");
+	jQuery("#x-tomorrow-temp").html(tomorrow.low + " ~ " + tomorrow.high + "°");
+
+    jQuery("#x-today-icon").css("background-image", "url(" + today.image_large + ")");
+	jQuery("#x-tomorrow-icon").css("background-image", "url(" + tomorrow.image_large + ")");
+	jQuery("#x-today-icon-small").css("background-image", "url(" + today.image_small + ")");
+
+    jQuery("#x-pub").html(data.pub);
+	if (data.wind.chill!=null)
+	  jQuery("#x-wind-chill").html(data.wind.chill);
+	if (data.wind.direction!=null)
+	  jQuery("#x-wind-direction").html(data.wind.direction);
+	if (data.wind.speed!=null)
+	  jQuery("#x-wind-speed").html(data.wind.speed);
+
+    if (data.atmosphere.humidity!=null)
+	  jQuery("#x-atmosphere-humidity").html(data.atmosphere.humidity);
+    if (data.atmosphere.visibility!=null)
+	  jQuery("#x-atmosphere-visibility").html(data.atmosphere.visibility);
+    if (data.atmosphere.pressure!=null)
+	  jQuery("#x-atmosphere-pressure").html(data.atmosphere.pressure);
+
+    if (data.astronomy.sunrise!=null)
+	  jQuery("#x-astronomy-sunrise").html(data.astronomy.sunrise);
+    if (data.astronomy.sunset!=null)
+	  jQuery("#x-astronomy-sunset").html(data.astronomy.sunset);
+  });
+});
+
+function change_city(key){
+  if (key=="-")
+    return;
+  var d = new Date();
+  d.setTime(d.getTime() + (10*365*24*60*60*1000));
+  var expires = "; expires=" + d.toGMTString();
+  document.cookie = "city=" + key + expires + "; path=/";
+  location.reload();
+}
+</script>
+<link rel="stylesheet" href="/static/css/screen.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="/static/css/print.css" type="text/css" media="print">
+<!--[if lt IE 8]>
+	<link rel="stylesheet" href="/static/css/ie.css" type="text/css" media="screen, projection">
+<![endif]-->
+<style type="text/css">
+div.w-report span.h {
+	margin:3px 0px;
+	font-weight:bold;
+    font-size:24px;
+	display:inline;
+}
+div.w-report span.date {
+	margin:3px 0px 3px 12px;
+	font-weight:bold;
+	font-size:16px;
+}
+div.weather-report {
+	background-image:url(static/img/w-bg.png);
+	background-repeat:no-repeat;
+	background-position:56px 70px;
+	margin:0px;
+	padding:0px;
+	width:300px;
+	height:160px;
+}
+div.weather-icon {
+	background-image:url(static/w/img/d44.png);
+	background-repeat:no-repeat;
+	margin:0px;
+	padding:0px;
+	width:300px;
+	height:160px;
+}
+div.weather-text {
+	text-align:right;
+	margin:0px;
+	padding-top:76px;
+	padding-right:20px;
+}
+div.weather-text p {
+	margin:0px;
+	color:#FFF;
+	font-size: 20px;
+	font-weight: bold;
+	text-shadow: #315895 0px -1px 1px;
+	line-height:28px;
+}
+</style>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-251595-22']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body style="font-size:13px">
+  <div class="container" style="background-color:#FFF">
+    <div class="span-24 last">
+    </div>
+    <div class="span-24 last">
+      <div id="x-today-icon-small" style="background-repeat:no-repeat; height:34; padding:10px 0px 10px 60px; background-image:url(static/w/img/s44.png)"><strong>${city.name}</strong>
+        <select name="change_city" id="change_city" onchange="change_city(this.value)">
+          <option value="-">更改城市</option>
+#for $c in $cities
+          <option value="${c.first_alias()}">${c.name}</option>
+#end for
+        </select>
+      </div>
+    </div>
+	<div class="span-16">
+      <div class="span-16 last">
+        <div id="weather-today" class="w-report span-8">
+          <div><span class="h">今日天气</span><span class="date"><span id="x-today-date"></span> <span id="x-today-day"></span></span></div>
+          <div class="weather-report">
+            <div id="x-today-icon" class="weather-icon">
+              <div class="weather-text">
+                <p id="x-today-text">Loading...</p>
+                <p id="x-today-temp"></p>
+              </div>
+            </div>
+          </div>
+          <div><span class="h">其他信息：</span></div>
+            <div style="padding:6px">
+            <div>风力：<span id="x-wind-chill">N/A</span> 风向：<span id="x-wind-direction">N/A</span> 风速：<span id="x-wind-speed">N/A</span></div>
+            <div>能见度：<span id="x-atmosphere-visibility">N/A</span> 湿度：<span id="x-atmosphere-humidity">N/A</span> 气压：<span id="x-atmosphere-pressure">N/A</span></div>
+            <div>日出：<span id="x-astronomy-sunrise">N/A</span> 日落：<span id="x-astronomy-sunset">N/A</span></div>
+            <div>发布于：<span id="x-pub">N/A</span></div>
+          </div>
+        </div>
+        <div id="weather-tomorrow" class="w-report span-8 last">
+          <div><span class="h">明日天气</span><span class="date"><span id="x-tomorrow-date"></span> <span id="x-tomorrow-day"></span></span></div>
+          <div class="weather-report">
+            <div id="x-tomorrow-icon" class="weather-icon">
+              <div class="weather-text">
+                <p id="x-tomorrow-text">Loading...</p>
+                <p id="x-tomorrow-temp"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-report span-16 last" style="margin-top:6px">
+        <div><span class="h">安装插件</span></div>
+        <div style="padding:6px">
+          <div>如果您使用的是支持HTML 5的Google Chrome浏览器，可以<a href="https://chrome.google.com/extensions/detail/gbmkicglakjoppnghhiceacmbbaihoeh" target="_blank">安装最新插件</a>以便随时获取天气预报：</div>
+          <div><a href="https://chrome.google.com/extensions/detail/gbmkicglakjoppnghhiceacmbbaihoeh" target="_blank"><img src="static/img/snapshot.png" width="291" height="99" style="margin:12px"/></a></div>
+        </div>
+      </div>
+    </div>
+    <div class="span-8 last">
+<script type="text/javascript"><!--
+google_ad_client = "pub-6727358730461554";
+/* 300x250 */
+google_ad_slot = "8201905603";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+<script type="text/javascript"><!--
+google_ad_client = "pub-6727358730461554";
+/* 300x250 */
+google_ad_slot = "8201905603";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+    </div>
+      <div class="span-24 last"></div>
+      <div class="span-24 last"><div style="text-align:center;padding:6px"><a href="http://code.google.com/p/weather-china/wiki/API" target="_blank">API服务</a> | <a href="http://code.google.com/p/weather-china/issues/list" target="_blank">意见反馈</a> | <a id="x-contact" href="#">联系我们</a> | Copyright&copy;2010</div></div>
+  </div>
+<script type="text/javascript">
+    jQuery("#x-contact").attr("href", "mail" + "to:ask" + "xuefeng@" + "gm" + "ail.com");
+</script>
+</body>
+</html>

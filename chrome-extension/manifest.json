@@ -1,0 +1,15 @@
+{
+  "background_page": "background.html",
+  "browser_action": {
+    "default_title": "城市天气预报（点击查看详细天气信息）"
+  },
+  "description": "提供中国地区主要城市的天气预报",
+  "icons": {
+    "128": "icon_128.png"
+  },
+  "name": "城市天气预报",
+  "permissions": [
+    "tabs", "http://weather-china.appspot.com/", "https://weather-china.appspot.com/"
+   ],
+  "version": "1.0"
+}
