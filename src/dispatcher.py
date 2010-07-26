@@ -79,7 +79,6 @@ class XmppHandler(webapp.RequestHandler):
         if isinstance(json, unicode):
             json = json.encode('utf-8')
         w = simplejson.loads(json, encoding='utf-8')
-        logging.info(w)
         return message.reply(
                 u'''%s：
 今日：%s，%s～%s度
