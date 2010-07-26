@@ -27,14 +27,14 @@ def get_city(key=None):
 def get_cities():
     return City.all().order('aliases').fetch(1000)
 
-def find_city(name):
+def find_city(name, return_default=True):
     '''
     Find city by name. Return City or None if not found.
     '''
     city = City.all().filter('aliases =', name).get()
     if city is None:
         city = City.all().filter('name =', name).get()
-    if city is None:
+    if city is None and return_default:
         city = City.all().filter('aliases =', 'beijing').get()
     return city
 

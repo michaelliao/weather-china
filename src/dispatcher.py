@@ -6,7 +6,10 @@ __author__ = 'Michael Liao (askxuefeng@gmail.com)'
 import os
 import cgi
 import time
+import logging
+import simplejson
 
+from google.appengine.api import xmpp
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import urlfetch
@@ -30,6 +33,64 @@ def get_city(request):
                 if c.startswith('city='):
                     return c[5:]
     return None
+
+def fetch_weather_in_cache(city):
+    data = memcache.get(str(city.code))
+    if data:
+        return data
+    data = fetch_weather(city)
+    if data is None:
+        return None
+    memcache.set(str(city.code), data, 3600)
+    return data
+
+def fetch_weather(city):
+    data = fetch_rss(city.code)
+    if data is None:
+        return None
+    return str(weather.Weather(city.name, data))
+
+def fetch_rss(code):
+    url = 'http://weather.yahooapis.com/forecastrss?w=%s' % code
+    logging.info('Fetch RSS: %s' % url)
+    try:
+        result = urlfetch.fetch(url, follow_redirects=False)
+    except (urlfetch.Error, apiproxy_errors.Error):
+        return None
+    if result.status_code!=200:
+        return None
+    return result.content
+
+class XmppHandler(webapp.RequestHandler):
+    def post(self):
+        message = xmpp.Message(self.request.POST)
+        logging.info('XMPP from %s: %s' % (message.sender, message.body))
+        name = message.body.strip()
+        if name=='':
+            message.reply('Please type your city to get weather forecast.')
+            return
+        city = store.find_city(name, return_default=False)
+        if city is None:
+            message.reply(':( Could not find your city "%s"' % name)
+            return
+        json = fetch_weather_in_cache(city)
+        if json is None:
+            return message.reply('Oops! Service is unavailable now. Please try again later!')
+        if isinstance(json, unicode):
+            json = json.encode('utf-8')
+        w = simplejson.loads(json, encoding='utf-8')
+        logging.info(w)
+        return message.reply(
+                u'''%s：
+今日：%s，%s～%s度
+明日：%s，%s～%s度
+发布于：%s
+                ''' % (
+                w[u'name'],
+                w[u'forecasts'][0][u'text'], w[u'forecasts'][0][u'low'], w[u'forecasts'][0][u'high'],
+                w[u'forecasts'][1][u'text'], w[u'forecasts'][1][u'low'], w[u'forecasts'][1][u'high'],
+                w[u'pub'])
+        )
 
 class HomeHandler(webapp.RequestHandler):
     def get(self):
@@ -105,10 +166,10 @@ class ApiHandler(webapp.RequestHandler):
             c = cgi.escape(self.request.get('city', '')).lower()
         if not c:
             return self.send_error('MISSING_PARAMETER', 'Missing parameter \'city\'')
-        city = store.find_city(c)
+        city = store.find_city(c, return_default=False)
         if city is None:
             return self.send_error('CITY_NOT_FOUND', 'City not found')
-        weather = self.fetch_weather_in_cache(city)
+        weather = fetch_weather_in_cache(city)
         if weather is None:
             return self.send_error('SERVICE_UNAVAILABLE', 'Service unavailable')
         if callback:
@@ -128,36 +189,11 @@ class ApiHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json; charset=utf-8'
         self.response.out.write(json)
 
-    def fetch_weather_in_cache(self, city):
-        data = memcache.get(str(city.code))
-        if data:
-            return data
-        data = self.fetch_weather(city)
-        if data is None:
-            return None
-        memcache.set(str(city.code), data, 3600)
-        return data
-
-    def fetch_weather(self, city):
-        data = self.fetch_rss(city.code)
-        if data is None:
-            return None
-        return str(weather.Weather(city.name, data))
-
-    def fetch_rss(self, code):
-        url = 'http://weather.yahooapis.com/forecastrss?w=%s' % code
-        try:
-            result = urlfetch.fetch(url, follow_redirects=False)
-        except (urlfetch.Error, apiproxy_errors.Error):
-            return None
-        if result.status_code!=200:
-            return None
-        return result.content
-
 application = webapp.WSGIApplication([
         ('^/$', HomeHandler),
         ('^/api$', ApiHandler),
         ('^/admin$', AdminHandler),
+        ('^/_ah/xmpp/message/chat/$', XmppHandler),
 ], debug=True)
 
 def main():
