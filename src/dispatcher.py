@@ -8,6 +8,7 @@ import cgi
 import time
 import logging
 import simplejson
+from datetime import date
 
 from google.appengine.api import xmpp
 from google.appengine.ext import webapp
@@ -65,17 +66,23 @@ class XmppHandler(webapp.RequestHandler):
     def post(self):
         message = xmpp.Message(self.request.POST)
         logging.info('XMPP from %s: %s' % (message.sender, message.body))
-        name = message.body.strip()
+        name = message.body.strip().lower()
         if name=='':
-            message.reply('Please type your city to get weather forecast.')
+            message.reply(u'''噢，啥都不输，怎么知道您要查询的城市啊？
+http://weather-china.appspot.com/
+''')
             return
         city = store.find_city(name, return_default=False)
         if city is None:
-            message.reply(':( Could not find your city "%s"' % name)
+            message.reply(u''':( 噢，没有找到您要查询的城市 "%s"。
+http://weather-china.appspot.com/
+''' % name)
             return
         json = fetch_weather_in_cache(city)
         if json is None:
-            return message.reply('Oops! Service is unavailable now. Please try again later!')
+            return message.reply(u''':( 对不起，网络故障，暂时无法查询，请过几分钟再试试。
+http://weather-china.appspot.com/
+''')
         if isinstance(json, unicode):
             json = json.encode('utf-8')
         w = simplejson.loads(json, encoding='utf-8')
@@ -83,22 +90,28 @@ class XmppHandler(webapp.RequestHandler):
                 u'''%s：
 今日：%s，%s～%s度
 明日：%s，%s～%s度
-发布于：%s
-                ''' % (
+更详细的预报请查看 http://weather-china.appspot.com/?city=%s
+''' % (
                 w[u'name'],
                 w[u'forecasts'][0][u'text'], w[u'forecasts'][0][u'low'], w[u'forecasts'][0][u'high'],
                 w[u'forecasts'][1][u'text'], w[u'forecasts'][1][u'low'], w[u'forecasts'][1][u'high'],
-                w[u'pub'])
+                city.first_alias(),)
         )
 
 class HomeHandler(webapp.RequestHandler):
     def get(self):
-        name = get_city(self.request)
+        name = self.request.get('city', '')
+        if not name:
+            name = get_city(self.request)
         cities = store.get_cities()
         city = store.find_city(name)
         if city is None:
             self.response.set_status(500)
             return
+        today = date.today()
+        target = date(today.year+3, today.month, today.day)
+        expires = target.strftime('%a, %d-%b-%Y %H:%M:%S GMT')
+        self.response.headers['Set-Cookie'] = 'city=%s; expires=%s; path=/' % (city.first_alias(), expires)
         root = os.path.dirname(__file__)
         t = Template(file=os.path.join(root, 'home.html'), searchList=[{'city' : city, 'cities' : cities}])
         self.response.out.write(t)
