@@ -19,6 +19,10 @@ function isWeatherChinaUrl(url) {
     return true;
   if (url=="https://weather-china.appspot.com/")
     return true;
+  if (url.indexOf("http://weather-china.appspot.com/?")==0)
+    return true;
+  if (url.indexOf("https://weather-china.appspot.com/?")==0)
+    return true;
   return false;
 }
 

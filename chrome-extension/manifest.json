@@ -11,5 +11,5 @@
   "permissions": [
     "tabs", "http://weather-china.appspot.com/", "https://weather-china.appspot.com/"
    ],
-  "version": "1.0"
+  "version": "1.2"
 }
