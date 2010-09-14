@@ -1,0 +1,8 @@
+<!ENTITY weatherchina.label "Your localized menuitem">
+<!ENTITY weatherchinaContext.label "Your Menuitem">
+<!ENTITY weatherchinaContext.accesskey "Y">
+<!ENTITY weatherchinaToolbarButton.label "Your Toolbar Button">
+<!ENTITY weatherchinaToolbarButton.tooltip "This is your toolbar button!">
+<!ENTITY weatherchinaSidebar.label "Your Sidebar">
+<!ENTITY weatherchinaToolbar.name  "example">
+<!ENTITY weatherchinaToolbar.label "This is an example toolbar. You can hide it under View &gt; toolbars &gt; &weatherchinaToolbar.name;">

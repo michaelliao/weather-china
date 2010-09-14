@@ -1,0 +1,6 @@
+content   weatherchina                 chrome/content/
+skin      weatherchina   classic/1.0   chrome/skin/
+locale    weatherchina   en-US         chrome/locale/en-US/
+
+overlay   chrome://browser/content/browser.xul   chrome://weatherchina/content/ff-overlay.xul
+style chrome://global/content/customizeToolbar.xul chrome://weatherchina/skin/overlay.css
