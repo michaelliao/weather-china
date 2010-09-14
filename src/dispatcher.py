@@ -19,6 +19,7 @@ from google.appengine.api import memcache
 from google.appengine.api import users
 
 from Cheetah.Template import Template
+from autogen import CompiledTemplate
 
 import weather
 import store
@@ -112,8 +113,7 @@ class HomeHandler(webapp.RequestHandler):
         target = date(today.year+3, today.month, today.day)
         expires = target.strftime('%a, %d-%b-%Y %H:%M:%S GMT')
         self.response.headers['Set-Cookie'] = 'city=%s; expires=%s; path=/' % (city.first_alias(), expires)
-        root = os.path.dirname(__file__)
-        t = Template(file=os.path.join(root, 'home.html'), searchList=[{'city' : city, 'cities' : cities}])
+        t = CompiledTemplate(searchList=[{'city' : city, 'cities' : cities}])
         self.response.out.write(t)
 
 class AdminHandler(webapp.RequestHandler):
