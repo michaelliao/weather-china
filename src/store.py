@@ -50,26 +50,6 @@ import urllib
 import datetime
 from xml.parsers.expat import ParserCreate
 
-locations = {
-        'beijing'      : 2151330,
-
-        'chengdu'      : 2158433,
-
-        'hong kong'    : 2165352,
-
-        'jinan'        : 2168327,
-
-        'mianyang'     : 2158439,
-
-        'sanya'        : 2162784,
-        'shanghai'     : 2151849,
-        'shijiazhuang' : 2171287,
-
-        'tianjin'      : 2159908,
-
-        'wuhan'        : 2163866,
-}
-
 codes = {
         0 : u'龙卷风', # tornado
         1 : u'热带风暴', # tropical storm
@@ -279,10 +259,7 @@ class Weather(object):
 
     __repr__ = __str__
 
-def load_weather(city):
-    data = load_rss('http://weather.yahooapis.com/forecastrss?u=c&w=%s' % locations[city])
-    return Weather(data)
-
-if __name__=='__main__':
-    w = load_weather('shanghai')
-    print w
+class Subscriber(db.Model):
+    mobile = db.StringProperty(required=True)
+    city = db.StringProperty(required=True)
+    time = db.IntegerProperty(required=True)
