@@ -101,6 +101,7 @@ http://weather-china.appspot.com/
 
 class HomeHandler(webapp.RequestHandler):
     def get(self):
+        time_1 = time.time()
         name = self.request.get('city', '')
         if not name:
             name = get_city(self.request)
@@ -113,8 +114,11 @@ class HomeHandler(webapp.RequestHandler):
         target = date(today.year+3, today.month, today.day)
         expires = target.strftime('%a, %d-%b-%Y %H:%M:%S GMT')
         self.response.headers['Set-Cookie'] = 'city=%s; expires=%s; path=/' % (city.first_alias(), expires)
+        time_2 = time.time()
         t = CompiledTemplate(searchList=[{'city' : city, 'cities' : cities}])
         self.response.out.write(t)
+        time_3 = time.time()
+        logging.info('Performance: %f / %f of rendering / total.' % (time_3-time_2, time_3-time_1))
 
 class AdminHandler(webapp.RequestHandler):
 
