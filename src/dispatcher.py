@@ -105,8 +105,15 @@ class HomeHandler(webapp.RequestHandler):
         name = self.request.get('city', '')
         if not name:
             name = get_city(self.request)
-        cities = store.get_cities()
-        city = store.find_city(name)
+        cities = memcache.get('__cities__')
+        if cities is None:
+            cities = store.get_cities()
+            memcache.set('__cities__', cities, 3600)
+        city = None
+        for c in cities:
+            if c.name==name or name in c.aliases:
+                city = c
+                break
         if city is None:
             self.response.set_status(500)
             return
