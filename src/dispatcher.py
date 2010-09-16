@@ -105,6 +105,8 @@ class HomeHandler(webapp.RequestHandler):
         name = self.request.get('city', '')
         if not name:
             name = get_city(self.request)
+        if not name:
+            name = 'beijing'
         cities = memcache.get('__cities__')
         if cities is None:
             cities = store.get_cities()
