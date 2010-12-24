@@ -1,8 +1,7 @@
-'''
-Created on Sep 8, 2010
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-@author: Michael Liao
-'''
+__author__ = 'Michael Liao (askxuefeng@gmail.com)'
 
 from os import path
 from Cheetah.Template import Template
