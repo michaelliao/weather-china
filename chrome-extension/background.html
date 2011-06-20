@@ -15,13 +15,13 @@ var requestTimeout = 1000 * 10;  // 10 seconds
 //var loadingAnimation = new LoadingAnimation();
 
 function isWeatherChinaUrl(url) {
-  if (url=="http://weather-china.appspot.com/")
+  if (url=="http://weather.china.xappengine.com/")
     return true;
-  if (url=="https://weather-china.appspot.com/")
+  if (url=="https://weather.china.xappengine.com/")
     return true;
-  if (url.indexOf("http://weather-china.appspot.com/?")==0)
+  if (url.indexOf("http://weather.china.xappengine.com/?")==0)
     return true;
-  if (url.indexOf("https://weather-china.appspot.com/?")==0)
+  if (url.indexOf("https://weather.china.xappengine.com/?")==0)
     return true;
   return false;
 }
@@ -124,7 +124,7 @@ function startRequest() {
       updateWeather(null);
     }
 
-    xhr.open("GET", "http://weather-china.appspot.com/api?extension=chrome", true);
+    xhr.open("GET", "http://weather.china.xappengine.com/api?extension=chrome", true);
     xhr.send(null);
   } catch(e) {
     console.error(chrome.i18n.getMessage("weather_china_check_exception", e));
@@ -187,7 +187,7 @@ function goToWeatherChina() {
         return;
       }
     }
-    chrome.tabs.create({url: "http://weather-china.appspot.com/"});
+    chrome.tabs.create({url: "http://weather.china.xappengine.com/"});
   });
 }
 

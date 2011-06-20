@@ -9,7 +9,7 @@
   },
   "name": "城市天气预报",
   "permissions": [
-    "tabs", "http://weather-china.appspot.com/", "https://weather-china.appspot.com/"
+    "tabs", "http://weather.china.xappengine.com/", "https://weather.china.xappengine.com/"
    ],
-  "version": "1.2"
+  "version": "1.3"
 }
